@@ -1,0 +1,201 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Feature Properties</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+
+    <table class="table table-hover table-sm border rounded">
+        <thead>
+        <tr>
+            <th colspan="2" class="text-center">Properties</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let property of properties | keyvalue">
+            <td class="text-right align-middlefs-5 fw-bold text-capitalize">{{property.key.replace('_', ' ')}}</td>
+            <td class="text-left align-middle text-muted">{{property.value}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="row">
+                <label class="col-lg-4 text-right">Border Color</label>
+                <div class="col-lg-8">
+                    <div class="border border-dark rounded color" [ngStyle]="{'background-color': options.color}" (click)="borderColorDialogToggle();"></div>
+                    <div class="d-flex justify-content-center justify-content-md-start" [hidden]="!borderColorDialog">
+                        <div style="z-index: 3" class="position-absolute" [hidden]="!borderColorDialog">
+                            <color-sketch [color]="options.color" (onChangeComplete)="changeBorderColor($event)"></color-sketch>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-lg-4 text-right">Border Width</label>
+                <div class="col-lg-8">
+                    <div class="input-group input-group-sm mb-2">
+                        <span class="input-group-text">{{options.weight}}</span>
+                        <input [(ngModel)]="options.weight" type="range" class="form-range form-control form-control-sm" id="borderopacity" min="0" max="20" step="1">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <label class="col-lg-4 text-right">Border Opacity</label>
+                <div class="col-lg-8">
+                    <div class="input-group input-group-sm mb-2">
+                        <span class="input-group-text">{{options.opacity}}</span>
+                        <input [(ngModel)]="options.opacity" type="range" class="form-range form-control form-control-sm" id="opacity" min="0" max="1" step="0.1">
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <label class="col-lg-4 text-right">Fill Color</label>
+                <div class="col-lg-8">
+                    <div class="border border-dark rounded color" [ngStyle]="{'background-color': options.fillColor}" (click)="fillColorDialogToggle();"></div>
+                    <div class="d-flex justify-content-center justify-content-md-start">
+                        <div style="z-index: 3" class="position-absolute" [hidden]="!fillColorDialog">
+                            <color-sketch [color]="options.fillColor" (onChangeComplete)="changeFillColor($event)"></color-sketch>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-lg-4 text-right">Fill Opacity</label>
+                <div class="col-lg-8">
+                    <div class="input-group input-group-sm mb-2">
+                        <span class="input-group-text">{{options.fillOpacity}}</span>
+                        <input [(ngModel)]="options.fillOpacity" type="range" class="form-range form-control form-control-sm" id="fillOpacity" min="0" max="1" step="0.1">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="col-lg-12" style="min-height: 100%;height: 100%;">
+                <div style="min-height: 100%;height: 100%;border-style: solid"
+                     [ngStyle]="{'background-color': options.fillColor,'border-color':options.color,'border-width':options.weight+'px'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" *ngIf="isStripe">
+                        <defs>
+                            <pattern id="pattern_XruE" x="0" y="0" [attr.width]="options.stripeOptions.width" [attr.height]="options.stripeOptions.height" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse"
+                                     [attr.patternTransform]="'rotate('+options.stripeOptions.angle+')'">
+                                <path [attr.stroke]="options.stripeOptions.color" [attr.stroke-opacity]="options.stripeOptions.opacity" [attr.stroke-width]="options.stripeOptions.weight" stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      fill="none"
+                                      pointer-events="none"
+                                      [attr.d]="'M0 '+options.stripeOptions.weight/2+' H '+options.stripeOptions.width"></path>
+                                <path [attr.stroke]="options.stripeOptions.spaceColor" [attr.stroke-opacity]="options.stripeOptions.spaceOpacity" [attr.stroke-width]="options.stripeOptions.spaceWeight"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      fill="none" pointer-events="none"
+                                      [attr.d]="'M0 '+(options.stripeOptions.weight + options.stripeOptions.spaceWeight / 2)+' H '+options.stripeOptions.width"></path>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#pattern_XruE)" opacity="1" fill-rule="evenodd"></rect>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <fieldset>
+                <legend>
+                    <div class="form-check form-switch form-check-inline mb-3 ">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="isStripe" role="switch" id="showBorder">
+                        <label class="form-check-label" for="showBorder">is Stripe</label>
+                    </div>
+                </legend>
+                <div *ngIf="isStripe">
+                    <div class="row">
+                        <label class="col-lg-2 text-right">Stripe Angle</label>
+                        <div class="col-lg-4">
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">{{options.stripeOptions.angle}}</span>
+                                <input [(ngModel)]="options.stripeOptions.angle" type="range" class="form-range form-control form-control-sm" id="stripeAngle" min="0" max="360" step="1">
+                            </div>
+                        </div>
+                        <label class="col-lg-2 text-right">Stripe Height</label>
+                        <div class="col-lg-4">
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">{{options.stripeOptions.height}}</span>
+                                <input [(ngModel)]="options.stripeOptions.height" type="range" class="form-range form-control form-control-sm" id="stripeHeight" min="0" max="100" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-lg-2 text-right">Stripe Weight</label>
+                        <div class="col-lg-4">
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">{{options.stripeOptions.weight}}</span>
+                                <input [(ngModel)]="options.stripeOptions.weight" type="range" class="form-range form-control form-control-sm" id="stripeWeight" min="0" max="100" step="1">
+                            </div>
+                        </div>
+
+                        <label class="col-lg-2 text-right">Space Weight</label>
+                        <div class="col-lg-4">
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">{{options.stripeOptions.spaceWeight}}</span>
+                                <input [(ngModel)]="options.stripeOptions.spaceWeight" type="range" class="form-range form-control form-control-sm" id="spaceWeight" min="0" max="100" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-lg-2 text-right">Stripe Color</label>
+                        <div class="col-lg-4">
+                            <div class="border border-dark rounded color" [ngStyle]="{'background-color': options.stripeOptions.color}" (click)="stripeColorDialogToggle();"></div>
+                            <div class="d-flex justify-content-center justify-content-md-start">
+                                <div style="z-index: 3" class="position-absolute" [hidden]="!stripeColorDialog">
+                                    <color-sketch [color]="options.stripeOptions.color" (onChangeComplete)="changeStripeColor($event)"></color-sketch>
+                                </div>
+                            </div>
+                        </div>
+
+                        <label class="col-lg-2 text-right">Space Color</label>
+                        <div class="col-lg-4">
+                            <div class="border border-dark rounded color" [ngStyle]="{'background-color': options.stripeOptions.spaceColor}" (click)="spaceColorDialogToggle();"></div>
+                            <div class="d-flex justify-content-center justify-content-md-start">
+                                <div style="z-index: 3" class="position-absolute" [hidden]="!spaceColorDialog">
+                                    <color-sketch [color]="options.stripeOptions.spaceColor" (onChangeComplete)="changeSpaceColor($event)"></color-sketch>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-lg-2 text-right">Stripe Opacity</label>
+                        <div class="col-lg-4">
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">{{options.stripeOptions.opacity}}</span>
+                                <input [(ngModel)]="options.stripeOptions.opacity" type="range" class="form-range form-control form-control-sm" id="stripeOpacity" min="0" max="1" step="0.1">
+                            </div>
+                        </div>
+
+                        <label class="col-lg-2 text-right">Space Opacity</label>
+                        <div class="col-lg-4">
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">{{options.stripeOptions.spaceOpacity}}</span>
+                                <input [(ngModel)]="options.stripeOptions.spaceOpacity" type="range" class="form-range form-control form-control-sm" id="spaceOpacity" min="0" max="1" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+    <button type="button" class="btn btn-secondary" (click)="bsModalRef.hide()">Close</button>
+</div>
